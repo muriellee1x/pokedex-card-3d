@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Card Mew</title>
+    <link rel="stylesheet" href="../assets/index-DK-TrFN6.css" />
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <style>
+      body {
+        background-color: #F1F1F1; /* 深色背景，可以根据需要更改 */
+        background-image: none; /* 移除任何背景图片 */
+      }
+
+      .site-footer{
+        background-color:white;
+      }
+      
+      .card-container {
+        display: flex;
+        justify-content: center;
+        /* max-width: 1200px; */
+        margin: 40px 100px 60px 100px;
+        min-height: 800px;
+        background-color: white;
+        border-radius: 15px;
+      }
+      
+      .card-image {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        transition: all 0.5s ease;
+      }
+      
+      /* 全屏模式样式 */
+      .card-image.fullscreen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 1000;
+        background-color: white;
+        margin: 0;
+        padding: 0;
+        flex: none;
+      }
+      
+      .card-image.fullscreen canvas {
+        width: 100% !important;
+        height: 100% !important;
+        margin-top: 0 !important;
+        border-radius: 0 !important;
+      }
+      
+      .card-details {
+        flex: 1;
+        padding: 80px;
+      }
+      
+      .type-badge {
+        display: inline-block;
+        padding: 4px 20px;
+        background-color: #F04F9B;
+        color: white;
+        border-radius: 15px;
+        font-weight: regular;
+        margin-left: 20px;
+      }
+/* 
+      .pagination {
+        display: flex;
+        justify-content: center;
+        margin: 1rem 0;
+      }
+
+      .pagination-button {
+        padding: 0.5rem 2rem;
+        background-color: #00BFFF;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+      
+      .prev-button {
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px;
+      }
+      
+      .next-button {
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
+      } */
+      
+    </style>
+  </head>
+  <body>
+    <!-- 自定义光标元素 -->
+    <div id="custom-cursor"></div>
+
+    <nav class="top-nav">
+      <div class="nav-item">3D Card Archives</div>
+      <a href="../index.html" class="nav-item nav-title" style="text-decoration: none; cursor: pointer;">Pokédex</a>
+      <div class="nav-item">Cyber Dex 2077</div>
+    </nav>
+    
+    <!-- 分页导航 -->
+    <!-- <div class="pagination">
+      <button class="pagination-button prev-button">&lt; Previous</button>
+      <button class="pagination-button next-button">Next &gt;</button>
+    </div> -->
+    
+    <!-- 卡片内容区域 -->
+    <div class="card-container">
+      <!-- 左侧卡片图像 -->
+      <div class="card-image">
+        <canvas id="webgl"></canvas>
+
+        <div class="animated-instruction">
+          &lt;&nbsp;&nbsp;&gt;
+        </div>
+
+        <div class="card-instruction">
+          {DUBLE-Clik} 
+          <br>To Enter Ditital Habitats
+        </div>
+      </div>
+      
+      <!-- 右侧卡片详情 -->
+      <div class="card-details">
+        <div class="pokemon-name">
+          <h1>Mew</h1>
+          <span class="pokemon-id">#0151</span>
+          <span class="type-badge">Psychic</span>
+        </div>
+        
+        <p class="description">
+          When viewed through a microscope, this Pokémon's short, fine, delicate hair can be seen.
+        </p>
+        
+        <div class="stats-container">
+          <div class="stat-box">
+            <div class="stat-label">Height</div>
+            <div class="stat-value">1'04"</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Weight</div>
+            <div class="stat-value">8.8 lbs</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Gender</div>
+            <div class="stat-value">Unknown</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Category</div>
+            <div class="stat-value">New Species</div>
+          </div>
+        </div>
+        
+        <div class="weaknesses-section">
+          <div class="weaknesses-title">
+            Weaknesses
+          </div>
+          <div class="weakness-badges">
+            <div class="weakness-badge">Bug</div>
+            <div class="weakness-badge">Ghost</div>
+            <div class="weakness-badge">Dark</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <footer class="site-footer">
+      <div class="footer-content">
+        <div class="footer-left">
+          <div class="footer-username">@yiixiao_l1</div>
+        </div>
+        <div class="footer-right">
+          <a href="https://www.instagram.com/yiixiao_l1/" class="footer-link" target="_blank">IG</a>
+          <div class="footer-link" id="mail-link">Mail</div>
+          <div class="footer-link" id="mis-link">Mis</div>
+        </div>
+      </div>
+      <div class="footer-copyright">©yiixiao_l1 2025. All Rights Reserved</div>
+    </footer>
+    
+    <!-- 返回按钮 -->
+    <div class="backbutton">&lt; Go Back</div>
+    <!-- <div class="backtohome">返回主页</div> -->
+    
+    <!-- 复制成功提示 -->
+    <div id="copy-popup" class="copy-popup">复制成功</div>
+
+    <script>
+      // 自定义光标跟随代码
+      const customCursor = document.getElementById('custom-cursor');
+      
+      document.addEventListener('mousemove', function(e) {
+        customCursor.style.left = e.clientX + 'px';
+        customCursor.style.top = e.clientY + 'px';
+      });
+      
+      // 添加指针状态检测
+      const pointerElements = document.querySelectorAll('a, button, input[type="submit"], input[type="button"], .backbutton, .backtohome, .pagination-button');
+      
+      // 监听所有可点击元素的鼠标事件
+      pointerElements.forEach(element => {
+        // 鼠标进入元素时
+        element.addEventListener('mouseenter', function() {
+          customCursor.classList.add('pointer');
+        });
+        
+        // 鼠标离开元素时
+        element.addEventListener('mouseleave', function() {
+          customCursor.classList.remove('pointer');
+        });
+      });
+      
+      // 返回主页
+      // document.querySelector('.backtohome').addEventListener('click', () => {
+      //   window.location.href = '../index.html';
+      // });
+      
+      // 返回上一页（修改此处以支持退出全屏模式）
+      document.querySelector('.backbutton').addEventListener('click', () => {
+        const cardImage = document.querySelector('.card-image');
+        if (cardImage.classList.contains('fullscreen')) {
+          cardImage.classList.remove('fullscreen');
+          
+          // 恢复页面滚动
+          document.body.style.overflow = '';
+          
+          // 让渲染器重新调整大小（这部分会在JavaScript文件中处理）
+        }
+      });
+      
+      // 导航栏滚动效果
+      function checkScroll() {
+        const nav = document.querySelector('.top-nav');
+        if (window.scrollY > 50) {
+          nav.classList.add('top-nav-scrolled');
+          document.body.classList.add('has-fixed-nav');
+        } else {
+          nav.classList.remove('top-nav-scrolled');
+          document.body.classList.remove('has-fixed-nav');
+        }
+      }
+
+      // 添加滚动事件监听
+      window.addEventListener('scroll', checkScroll);
+      
+      // 初始检查
+      checkScroll();
+      
+      // 监听canvas的鼠标悬停事件
+      const canvas = document.getElementById('webgl');
+      const cardImage = document.querySelector('.card-image');
+      
+      // 修正鼠标悬停事件处理
+      canvas.addEventListener('mouseover', function() {
+        cardImage.classList.add('canvas-hovered');
+      });
+      
+      canvas.addEventListener('mouseout', function() {
+        cardImage.classList.remove('canvas-hovered');
+      });
+      
+      // 添加对animated-instruction元素的鼠标悬停事件处理
+      const animatedInstruction = document.querySelector('.animated-instruction');
+      animatedInstruction.addEventListener('mouseover', function() {
+        cardImage.classList.add('canvas-hovered');
+      });
+      
+      animatedInstruction.addEventListener('mouseout', function(e) {
+        // 检查鼠标是否移动到canvas上，如果不是才移除类
+        if (!canvas.contains(e.relatedTarget)) {
+          cardImage.classList.remove('canvas-hovered');
+        }
+      });
+
+      // 复制到剪贴板功能
+      const misLink = document.getElementById('mis-link');
+      const mailLink = document.getElementById('mail-link');
+      const copyPopup = document.getElementById('copy-popup');
+      
+      if (misLink && copyPopup) {
+        misLink.addEventListener('click', function() {
+          // 创建一个临时的textarea元素
+          const textarea = document.createElement('textarea');
+          textarea.value = 'liyixiao07';
+          textarea.style.position = 'fixed';
+          textarea.style.opacity = '0';
+          document.body.appendChild(textarea);
+          
+          // 选择文本并复制
+          textarea.select();
+          document.execCommand('copy');
+          
+          // 移除临时元素
+          document.body.removeChild(textarea);
+          
+          // 显示弹出提示
+          copyPopup.textContent = "mis号已复制到剪贴板";
+          copyPopup.classList.add('show');
+          
+          // 3秒后隐藏弹出提示
+          setTimeout(function() {
+            copyPopup.classList.remove('show');
+          }, 3000);
+        });
+        
+        // 添加指针样式
+        misLink.addEventListener('mouseenter', function() {
+          if (customCursor) {
+            customCursor.classList.add('pointer');
+          }
+        });
+        
+        misLink.addEventListener('mouseleave', function() {
+          if (customCursor) {
+            customCursor.classList.remove('pointer');
+          }
+        });
+      }
+      
+      // 邮箱复制功能
+      if (mailLink && copyPopup) {
+        mailLink.addEventListener('click', function() {
+          // 创建一个临时的textarea元素
+          const textarea = document.createElement('textarea');
+          textarea.value = 'muriellee1x@gmail.com';
+          textarea.style.position = 'fixed';
+          textarea.style.opacity = '0';
+          document.body.appendChild(textarea);
+          
+          // 选择文本并复制
+          textarea.select();
+          document.execCommand('copy');
+          
+          // 移除临时元素
+          document.body.removeChild(textarea);
+          
+          // 显示弹出提示
+          copyPopup.textContent = "邮箱号已复制到剪贴板";
+          copyPopup.classList.add('show');
+          
+          // 3秒后隐藏弹出提示
+          setTimeout(function() {
+            copyPopup.classList.remove('show');
+          }, 3000);
+        });
+        
+        // 添加指针样式
+        mailLink.addEventListener('mouseenter', function() {
+          if (customCursor) {
+            customCursor.classList.add('pointer');
+          }
+        });
+        
+        mailLink.addEventListener('mouseleave', function() {
+          if (customCursor) {
+            customCursor.classList.remove('pointer');
+          }
+        });
+      }
+      
+    </script>
+    <script type="module" src="./card-mew.js"></script>
+  </body>
+</html> 
